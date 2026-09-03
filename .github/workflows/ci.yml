@@ -8,14 +8,25 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+
+    # Dummy values, shared by every step. src/lib/env.ts validates the
+    # server-side config at module load and next.config.ts asserts
+    # NEXT_PUBLIC_SITE_URL at build time, so a build cannot run without them.
+    env:
+      RESEND_API_KEY: dummy_key_for_build
+      CONTACT_TO_EMAIL: build@example.com
+      CONTACT_FROM_EMAIL: build@example.com
+      NEXT_PUBLIC_SITE_URL: https://example.com
+
     steps:
       - uses: actions/checkout@v4
 
+      # No `version:` here on purpose. pnpm/action-setup reads the
+      # "packageManager" field from package.json, and specifying the version
+      # in both places is a hard error ("Multiple versions of pnpm
+      # specified"), not a redundancy. package.json stays the single source
+      # of truth, so bumping pnpm is a one-line change.
       - uses: pnpm/action-setup@v4
-        with:
-          # Must match the "packageManager" field in package.json, or the
-          # lockfile is rejected by --frozen-lockfile.
-          version: 11
 
       - uses: actions/setup-node@v4
         with:
@@ -23,25 +34,19 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
-      - run: pnpm lint
-      - run: pnpm format:check
 
-      # Build both modes. src/lib/env.ts throws at module load on invalid
-      # config, so the dummy values are required; building only one mode
-      # would leave the gated routing unverified until launch day.
-      - run: pnpm build
+      # The same command developers run locally: typecheck, lint,
+      # format:check, check:copy, build. Running `verify` rather than
+      # listing its parts means the two can never drift apart.
+      - name: Verify (live mode)
+        run: pnpm verify
         env:
           SITE_MODE: live
-          RESEND_API_KEY: dummy_key_for_build
-          CONTACT_TO_EMAIL: build@example.com
-          CONTACT_FROM_EMAIL: build@example.com
-          NEXT_PUBLIC_SITE_URL: https://example.com
 
-      - run: pnpm build
+      # Build the gated configuration too. Only one mode gets exercised by
+      # the step above, which would leave the launch redirects unverified
+      # until the day they matter.
+      - name: Build (coming-soon mode)
+        run: pnpm build
         env:
           SITE_MODE: coming-soon
-          RESEND_API_KEY: dummy_key_for_build
-          CONTACT_TO_EMAIL: build@example.com
-          CONTACT_FROM_EMAIL: build@example.com
-          NEXT_PUBLIC_SITE_URL: https://example.com
