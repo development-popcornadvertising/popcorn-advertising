@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Design tokens                                                      */
+/*  Every value here comes from Figma. Do not add a colour to a        */
+/*  component — add it here and use the generated utility.             */
+/* ------------------------------------------------------------------ */
+
+@theme {
+  /* --- Brand palette [FIGMA: confirm every hex] ------------------- */
+  --color-cream: #faf0dc; /* page background */
+  --color-cream-deep: #f2e4c6; /* subtle panel on cream */
+  --color-paper: #fffdf7; /* card surface */
+
+  --color-ink: #2e2233; /* primary text, footer background */
+  --color-ink-soft: #5a4f60; /* body copy on cream */
+
+  --color-pop: #c9184a; /* primary action, accents */
+  --color-pop-deep: #a41139; /* hover state */
+
+  --color-grape: #453079; /* dark brand panel */
+  --color-grape-soft: #6b53a8; /* secondary headline accent */
+  --color-grape-tint: #e5e0f5; /* icon chip background */
+
+  --color-butter: #efce79; /* CTA band */
+
+  /* --- Typography ------------------------------------------------- */
+  /* next/font writes --font-*-face; these map onto it. Naming them
+     identically would collide with the utility Tailwind generates. */
+  --font-display: var(--font-display-face), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
+
+  /* Type scale — 1.25 (major third) from a 16px base */
+  --text-xs: 0.75rem; /* 12px — eyebrow, legal */
+  --text-sm: 0.875rem; /* 14px — footer links, labels */
+  --text-base: 1rem; /* 16px — body */
+  --text-lg: 1.125rem; /* 18px — lead paragraph */
+  --text-xl: 1.5rem; /* 24px — card title */
+  --text-2xl: 2rem; /* 32px — small section heading */
+  --text-3xl: 2.75rem; /* 44px — section heading */
+  --text-4xl: 3.5rem; /* 56px — hero, desktop */
+  --text-5xl: 4.25rem; /* 68px — holding page headline */
+
+  /* --- Layout ----------------------------------------------------- */
+  --spacing-section: 6rem; /* vertical rhythm between sections */
+  --spacing-section-lg: 8rem;
+  --radius-card: 1rem;
+  --radius-pill: 999px;
+
+  /* --- Motion ----------------------------------------------------- */
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.78);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base layer                                                         */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    /* Next 16 removed automatic smooth scrolling for router navigation.
+       The <html> element also carries data-scroll-behavior="smooth" so
+       the router honours this rule — see src/app/layout.tsx. */
+    scroll-behavior: smooth;
+    /* Clears the sticky header when jumping to an anchor */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink-soft);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* One focus style for the whole site. Never remove it per-component. */
+  :focus-visible {
+    outline: 2px solid var(--color-pop);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-pop);
+    color: var(--color-cream);
+  }
+
+  /* Native constraint validation, styled.
+     :user-invalid applies only *after* the user has interacted with the
+     field, which is the same semantics as validating on blur — with no
+     JavaScript. This is why the notify form needs no client-side
+     validation library. */
+  input:user-invalid,
+  textarea:user-invalid {
+    border-color: var(--color-pop);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Launch intro                                                       */
+/*                                                                     */
+/*  Entirely CSS: no JavaScript, no hydration risk, no inline script   */
+/*  for a CSP to work around. The exit is a keyframe with forwards     */
+/*  fill, so the overlay clears itself even with JS disabled.          */
+/*                                                                     */
+/*  Plays on every load. A session gate was tried and removed: it made */
+/*  the animation invisible on reload, which is when people actually   */
+/*  look at it, and mutating <html> pre-paint tripped a React          */
+/*  hydration mismatch.                                                */
+/* ------------------------------------------------------------------ */
+
+/* Each puff is animated on a wrapping div, never on the SVG <circle>
+   itself. CSS transform-origin resolves against the SVG user coordinate
+   space rather than the element, so scaling a circle directly distorted it
+   into a rounded rectangle. Animating the div sidesteps that entirely. */
+@keyframes intro-burst {
+  0% {
+    transform: scale(0) rotate(-28deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.14) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* The wordmark settles out of wide tracking, so it reads as type coming
+   into focus rather than a block fading in. */
+@keyframes intro-word {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+    letter-spacing: 0.34em;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Curtain up. Wiping the overlay away from the bottom reveals the page
+   underneath, which reads as a reveal; a plain opacity fade reads as a
+   loading screen disappearing. */
+@keyframes intro-clear {
+  0% {
+    clip-path: inset(0 0 0 0);
+    visibility: visible;
+  }
+  99% {
+    visibility: visible;
+  }
+  100% {
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+  }
+}
+
+.intro {
+  animation: intro-clear 0.62s cubic-bezier(0.76, 0, 0.24, 1) 1.32s forwards;
+}
+
+.intro-puff {
+  animation: intro-burst 0.68s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.intro-word {
+  animation: intro-word 0.66s cubic-bezier(0.16, 1, 0.3, 1) 0.42s backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Custom utilities                                                   */
+/* ------------------------------------------------------------------ */
+
+/* The diagonal cream/purple edges from the design.
+   clip-path stays crisp at any viewport width and costs no extra DOM. */
+@utility slice-b {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5rem), 0 100%);
+}
+
+@utility slice-t {
+  clip-path: polygon(0 3.5rem, 100% 0, 100% 100%, 0 100%);
+}
+
+@utility slice-tb {
+  clip-path: polygon(0 3.5rem, 100% 0, 100% calc(100% - 3.5rem), 0 100%);
+}
+
+/* Pauses any animation for users who ask for reduced motion. */
+@utility motion-safe-only {
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+  }
+}

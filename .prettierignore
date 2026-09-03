@@ -1,0 +1,7 @@
+.next
+node_modules
+pnpm-lock.yaml
+public/fonts
+
+# Reference documents — authored by hand, not formatted by tooling.
+IMPLEMENTATION.md
