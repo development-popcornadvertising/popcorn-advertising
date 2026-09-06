@@ -30,7 +30,9 @@ export function renderEnquiryAutoReply(input: EnquiryEmailInput): {
   text: string;
 } {
   const first = escapeHtml(firstNameOf(input.name));
-  const siteUrl = siteConfig.url.replace(/\/$/, "");
+  // emailUrl, not url: `url` is localhost in development and this link is
+  // read in someone else's inbox.
+  const siteUrl = siteConfig.emailUrl;
 
   const body = [
     eyebrow("Message received"),

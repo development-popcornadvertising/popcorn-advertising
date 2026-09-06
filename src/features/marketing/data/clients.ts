@@ -4,7 +4,6 @@ import cocaCola from "@/assets/clients/coca-cola.png";
 import deloitte from "@/assets/clients/deloitte.png";
 import ford from "@/assets/clients/ford.png";
 import lg from "@/assets/clients/lg.png";
-import marlboro from "@/assets/clients/marlboro.png";
 import microsoft from "@/assets/clients/microsoft.png";
 import starbucks from "@/assets/clients/starbucks.png";
 import toyota from "@/assets/clients/toyota.png";
@@ -32,7 +31,6 @@ export interface Client {
 export const clients = [
   { name: "Microsoft", logo: microsoft, width: 177 },
   { name: "Toyota", logo: toyota, width: 183 },
-  { name: "Marlboro", logo: marlboro, width: 117 },
   { name: "Coca-Cola", logo: cocaCola, width: 135 },
   { name: "Starbucks", logo: starbucks, width: 181 },
   { name: "Deloitte", logo: deloitte, width: 168 },

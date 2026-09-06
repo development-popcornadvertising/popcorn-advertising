@@ -5,10 +5,11 @@ import { siteConfig } from "@/lib/siteConfig";
  *
  * Lives here rather than in app/layout.tsx so that app/ stays routing-only.
  *
- * `telephone` is deliberately omitted: siteConfig still carries the
- * placeholder "+91 00000 00000", and feeding a fake number into Google's
- * entity graph is worse than sending no number at all. Add it here once the
- * real one lands.
+ * `telephone` is now included. It was omitted while siteConfig carried a
+ * placeholder, because feeding a fake number into Google's entity graph is
+ * worse than sending none; the real number has since landed. It is emitted
+ * in E.164, which is the format Google expects rather than the spaced form
+ * the site displays.
  *
  * Only Organization is emitted. No WebSite/SearchAction (there is no search)
  * and no Service entries for pages that do not exist yet — claiming
@@ -22,6 +23,7 @@ export function OrganizationJsonLd() {
     url: siteConfig.url,
     description: siteConfig.description,
     email: siteConfig.contact.email,
+    telephone: siteConfig.contact.phoneHref,
     address: {
       "@type": "PostalAddress",
       addressLocality: "New Delhi",

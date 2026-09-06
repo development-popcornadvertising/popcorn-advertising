@@ -33,14 +33,17 @@ export interface Service {
  * ticker and the footer links all read from here.
  */
 export const services = [
-  { id: "branding", title: "Branding / Visuals / UI‑UX", short: "Branding", icon: Grid2x2 },
-  { id: "motion", title: "Motion Design & Explainers", short: "Motion Design", icon: PlayCircle },
-  { id: "music", title: "Music Production & Licensing", short: "Music & Licensing", icon: Music },
-  { id: "podcast", title: "Podcast Production", short: "Podcasts", icon: Mic },
+  // Array order IS display order, and the card's corner index is derived from
+  // it, so moving an entry renumbers the grid on its own. It also reorders the
+  // ticker and the holding page's marquee, which read from this same array.
   { id: "influencer", title: "Influencer Marketing", short: "Influencer", icon: UserCheck },
   { id: "ad-films", title: "Digital Ad Films", short: "Digital Ad Films", icon: Clapperboard },
   { id: "video", title: "Video Production", short: "Video", icon: Video },
   { id: "celebrity", title: "Celebrity Engagements", short: "Celebrity Engagements", icon: Star },
+  { id: "branding", title: "Branding / Visuals / UI‑UX", short: "Branding", icon: Grid2x2 },
+  { id: "motion", title: "Motion Design & Explainers", short: "Motion Design", icon: PlayCircle },
+  { id: "music", title: "Music Production & Licensing", short: "Music & Licensing", icon: Music },
+  { id: "podcast", title: "Podcast Production", short: "Podcasts", icon: Mic },
   { id: "ooh", title: "OOH / Offline Activations", short: "Offline Activations", icon: Volume2 },
   { id: "meme", title: "Meme Marketing", short: "Meme Marketing", icon: Smile },
   { id: "events-mgmt", title: "Events Management", short: "Events Branding", icon: CalendarDays },

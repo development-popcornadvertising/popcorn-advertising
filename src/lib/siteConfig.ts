@@ -14,10 +14,34 @@ export const siteConfig = {
     "Ideas that pop. Results that stay. A full-service creative and marketing agency for brands that want more than noise.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 
+  /**
+   * The URL to put in an email.
+   *
+   * `url` above is whatever NEXT_PUBLIC_SITE_URL says, which is localhost in
+   * development. An email is always read somewhere other than the machine
+   * that sent it, so a localhost link in one is dead on arrival, and a test
+   * enquiry from a laptop produced a "See our work" button pointing at
+   * http://localhost:3000.
+   *
+   * In production NEXT_PUBLIC_SITE_URL is the real domain and this is simply
+   * that value; the fallback only ever applies to local development.
+   */
+  get emailUrl(): string {
+    const configured = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    const isLoopback = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i.test(
+      configured.replace(/\/$/, ""),
+    );
+    return !configured || isLoopback
+      ? "https://popcornadvertising.com"
+      : configured.replace(/\/$/, "");
+  },
+
   contact: {
     email: "hello@popcornadvertising.com",
-    phone: "+91 00000 00000", // [CLIENT] replace before launch
-    phoneHref: "+910000000000",
+    // Grouped 5-5 the way an Indian mobile is normally written. phoneHref
+    // is the same number in E.164, which is what tel: needs.
+    phone: "+91 97119 70036",
+    phoneHref: "+919711970036",
     location: "New Delhi, India",
   },
 

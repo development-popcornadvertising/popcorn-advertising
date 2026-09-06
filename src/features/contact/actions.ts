@@ -1,5 +1,7 @@
 "use server";
 
+import { createHash } from "node:crypto";
+
 import { getClientIp } from "@/lib/clientIp";
 import { renderEnquiryAutoReply } from "@/lib/email/templates/enquiryAutoReply";
 import { renderEnquiryNotification } from "@/lib/email/templates/enquiryNotification";
@@ -30,6 +32,29 @@ const MIN_FILL_MS = 3000;
 /** Enquiries permitted per IP per window. */
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * A stable fingerprint of one enquiry, for Resend's idempotency key.
+ *
+ * WHY A HASH AND NOT THE LENGTH. This used to be
+ * `contact:${email}:${message.length}`, which collides far too easily: two
+ * different messages of the same length from the same address inside 24
+ * hours produce the same key, and Resend answers the second with a 409
+ * because the body no longer matches. The sender is then told their message
+ * could not be sent, when the real problem is that we asked Resend to
+ * deduplicate two things that were never duplicates. Found by sending two
+ * test enquiries whose only difference was a fixed-width timestamp.
+ *
+ * Hashing the content instead means an identical resubmission (a
+ * double-click, a retried request) still dedupes, while any real change is
+ * a new message.
+ */
+function fingerprint(input: { email: string; company: string; message: string }): string {
+  return createHash("sha256")
+    .update(`${input.email}\n${input.company}\n${input.message}`)
+    .digest("hex")
+    .slice(0, 32);
+}
 
 const failure = (values: Record<string, string>): ContactFormState => ({
   status: "error",
@@ -138,10 +163,10 @@ export async function submitContact(
         // is a measurable spam signal, and some clients only render text.
         text: notification.text,
       },
-      // Suppresses a duplicate if the same person submits twice in quick
-      // succession, or if the request is retried. Keyed on the message too,
-      // so a genuine second enquiry from the same address still arrives.
-      { idempotencyKey: `contact:${enquiry.email}:${enquiry.message.length}` },
+      // Suppresses a duplicate if the same person submits the same thing
+      // twice, or if the request is retried. See fingerprint() for why this
+      // hashes the content rather than measuring it.
+      { idempotencyKey: `contact:${fingerprint(enquiry)}` },
     );
 
     if (error) {
@@ -189,9 +214,9 @@ async function sendAutoReply(enquiry: Parameters<typeof renderEnquiryAutoReply>[
         html: reply.html,
         text: reply.text,
       },
-      // Distinct from the notification's key, or Resend would treat the
-      // second send as a duplicate of the first and drop it.
-      { idempotencyKey: `contact-reply:${enquiry.email}:${enquiry.message.length}` },
+      // Distinct prefix from the notification's key, or Resend would treat
+      // this second send as a duplicate of the first and drop it.
+      { idempotencyKey: `contact-reply:${fingerprint(enquiry)}` },
     );
 
     if (error) {
