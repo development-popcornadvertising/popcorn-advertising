@@ -63,12 +63,16 @@ Open <http://localhost:3000>.
 
 `pnpm dev` works with placeholder Resend credentials. The notify form will validate correctly and then fail at the send step with a visible fallback message, which is the intended behaviour without a real API key.
 
-Two routes exist in development:
+Five routes exist in development. Everything but `/` and `/dev` is behind the
+launch gate, so in `coming-soon` they `307` to `/`.
 
-| Route  | Purpose                                                             |
-| ------ | ------------------------------------------------------------------- |
-| `/`    | The holding page, or the real home page when `SITE_MODE=live`       |
-| `/dev` | Every UI primitive in every state. Blocked on the production deploy |
+| Route      | Purpose                                                             |
+| ---------- | ------------------------------------------------------------------- |
+| `/`        | The holding page, or the real home page when `SITE_MODE=live`       |
+| `/about`   | The agency, its approach, and the four stages of a brief            |
+| `/work`    | Six projects behind a chip filter derived from the project data     |
+| `/contact` | The enquiry form. The only route that does anything                 |
+| `/dev`     | Every UI primitive in every state. Blocked on the production deploy |
 
 ---
 
@@ -189,13 +193,15 @@ Full detail lives in [`AGENTS.md`](./AGENTS.md), which `CLAUDE.md` imports. The 
 
 ## Common tasks
 
-| To change                        | Edit                                      | Updates                                     |
-| -------------------------------- | ----------------------------------------- | ------------------------------------------- |
-| A phone number, email, nav label | `src/lib/siteConfig.ts`                   | Everywhere it appears                       |
-| The service list                 | `src/features/marketing/data/services.ts` | Marquee and services grid together          |
-| A brand colour or spacing step   | `src/styles/globals.css` `@theme`         | The whole site (see the `cn.ts` note above) |
-| Where the forms deliver          | `src/features/coming-soon/actions.ts`     | Nothing else                                |
-| Launch state                     | `SITE_MODE` in Vercel                     | Routing, robots, sitemap                    |
+| To change                        | Edit                                           | Updates                                     |
+| -------------------------------- | ---------------------------------------------- | ------------------------------------------- |
+| A phone number, email, nav label | `src/lib/siteConfig.ts`                        | Everywhere it appears                       |
+| The service list                 | `src/features/marketing/data/services.ts`      | Ticker and services grid together           |
+| The client logo wall             | `src/features/marketing/data/clients.ts`       | Both logo strips                            |
+| The hero / why-us media panels   | Pass `image` or `video` to `MediaFrame`        | Replaces the animated fallback in place     |
+| A brand colour or spacing step   | `src/styles/globals.css` `@theme`              | The whole site (see the `cn.ts` note above) |
+| Where the forms deliver          | `coming-soon/actions.ts`, `contact/actions.ts` | Nothing else                                |
+| Launch state                     | `SITE_MODE` in Vercel                          | Routing, robots, sitemap                    |
 
 ### Adding a case study
 
@@ -210,6 +216,10 @@ The repository functions are `async` even though they currently read a local arr
 - Toolchain: strict TypeScript, ESLint, Prettier with Tailwind class sorting, the `verify` gate, CI building both launch modes
 - Design system: tokens, six UI primitives, the `/dev` gallery
 - The launch gate, verified in both modes
+- **The landing page**: sticky translucent header with a mobile menu, hero with the diagonal panel, the service ticker, the twelve-discipline grid, the tilted why-us band with the client wall, the popcorn-edged CTA, and the four-column footer
+- **`/about`**: hero with the diagonal wedge, four counting stat cards, the sliced grape approach band, and the four numbered process steps
+- **`/work`**: six project cards behind a chip filter. The filter is one `useState` in a client leaf; the cards stay Server Components and never ship to the browser
+- **`/contact`**: a validated enquiry form on `useActionState`, so it works before hydration and with JavaScript off. Honeypot plus a timing check, and the timing check fails open so a no-JS submission is never rejected
 - The holding page: headline, positioning copy, direct contact, service marquee, and a notify-me form that works with JavaScript disabled
 - A CSS-only intro animation, self-dismissing, removed entirely under `prefers-reduced-motion`
 - SEO: canonical, mode-aware robots and sitemap, generated OG image, Organization JSON-LD, manifest
@@ -219,16 +229,17 @@ The repository functions are `async` even though they currently read a local arr
 
 Ordered by lead time, longest first.
 
-| Item                           | Notes                                                                                                                                                                                                       |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Resend domain verification** | SPF and DKIM records. Needs DNS access and propagation time. **Start this first.** Do not send from Resend's shared testing domain; it lands in spam                                                        |
-| **Brand typefaces**            | `public/fonts/` is empty, so all type currently falls back to the system sans. `src/lib/fonts.ts` is written and waiting on four `.woff2` files                                                             |
-| **Logo asset**                 | `public/logo.svg`. The mark is currently inline SVG in `PopcornMark.tsx`. No favicon is shipped at present                                                                                                  |
-| **Rate limiting**              | The notify Server Action is a public POST endpoint and Resend's free tier is 100 emails per day. The honeypot stops naive bots only. Add a Vercel Firewall rule on `/`. Treat as a blocker, not a follow-up |
-| `[CLIENT]` values              | Real phone number, confirmed brand hex values, social URLs, and sign-off on the copy. Grep for `[CLIENT]` and `[FIGMA]`                                                                                     |
-| Tests                          | There are none. The Server Action, the schema and the gate are the places to start                                                                                                                          |
-| Accessibility and Lighthouse   | Neither axe nor Lighthouse has been run against the finished page                                                                                                                                           |
-| Remaining routes               | Home, About, Work and Contact are unbuilt. See `IMPLEMENTATION.md` phases 2 to 6                                                                                                                            |
+| Item                           | Notes                                                                                                                                                                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Resend domain verification** | SPF and DKIM records. Needs DNS access and propagation time. **Start this first.** Do not send from Resend's shared testing domain; it lands in spam                                                                                                            |
+| **Brand typefaces**            | Type ships on **Figtree** via `next/font/google`. If the real Gilroy licence lands, drop the `.woff2` files in and swap the loader in `src/lib/fonts.ts` — nothing else changes                                                                                 |
+| **Higher-resolution logos**    | Every supplied raster except `logo.png` is 1x at the size the design renders it, so the footer lockup and the eight client logos are soft on a 2x display. Ask the client for SVG or 2x PNG                                                                     |
+| **Favicon**                    | No favicon ships yet. Add `app/icon.png` (or `icon.tsx`) once the brand mark is finalised                                                                                                                                                                       |
+| **Rate limiting**              | Both Server Actions are public POST endpoints and Resend's free tier is 100 emails per day. The honeypot and timing check stop naive bots only; neither is rate limiting. Add a Vercel Firewall rule on `/` and `/contact`. Treat as a blocker, not a follow-up |
+| `[CLIENT]` values              | Real phone number, confirmed brand hex values, social URLs, and sign-off on the copy. Grep for `[CLIENT]` and `[FIGMA]`                                                                                                                                         |
+| Tests                          | There are none. The Server Action, the schema and the gate are the places to start                                                                                                                                                                              |
+| Accessibility and Lighthouse   | Neither axe nor Lighthouse has been run against the finished page                                                                                                                                                                                               |
+| Remaining routes               | Home, About, Work and Contact are unbuilt. See `IMPLEMENTATION.md` phases 2 to 6                                                                                                                                                                                |
 
 ---
 

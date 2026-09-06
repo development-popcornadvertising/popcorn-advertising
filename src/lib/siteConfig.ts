@@ -9,6 +9,9 @@ export const siteConfig = {
   descriptor: "Creative & Marketing Agency in New Delhi",
   description:
     "A full-service creative and marketing agency. From brand identity to celebrity engagements, we plan, produce and place work that gets noticed.",
+  /** Shorter, warmer variant used in the footer's brand column. */
+  footerBlurb:
+    "Ideas that pop. Results that stay. A full-service creative and marketing agency for brands that want more than noise.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 
   contact: {
@@ -32,17 +35,27 @@ export const siteConfig = {
     { label: "Contact", href: "/contact" },
   ],
 
+  /**
+   * The header's call to action, kept out of `nav` so it renders once.
+   *
+   * Also drives every CtaBand, so this one href is what points the closing
+   * button on the home, about and work pages at the enquiry form. It was a
+   * `mailto:` until /contact existed, which silently does nothing for anyone
+   * without a desktop mail client configured.
+   */
+  cta: { label: "Start a project", href: "/contact" },
+
   footerNav: {
+    studio: [
+      { label: "About Us", href: "/about" },
+      { label: "Our Work", href: "/work" },
+      { label: "Careers", href: "mailto:hello@popcornadvertising.com" }, // [CLIENT] confirm a careers page
+    ],
     services: [
       { label: "Branding & UI/UX", href: "/#services" },
       { label: "Digital Ad Films", href: "/#services" },
       { label: "Influencer Marketing", href: "/#services" },
       { label: "Events Management", href: "/#services" },
-    ],
-    studio: [
-      { label: "About us", href: "/about" },
-      { label: "Our work", href: "/work" },
-      { label: "Careers", href: "/careers" }, // [CLIENT] confirm this page exists
     ],
   },
 } as const;

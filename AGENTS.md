@@ -63,6 +63,13 @@ Nine runtime dependencies. A tenth needs a written reason.
 | `components/layout/` | Appears on every page. Takes content as props rather than importing feature data.                                   |
 | `features/*/`        | Content-aware. Owns its components, its data shape and its data access.                                             |
 | `lib/`               | Cross-cutting utilities, no JSX.                                                                                    |
+| `assets/`            | Images imported by components. Static imports, never `public/` — see below.                                         |
+
+**Why `src/assets/` and not `public/`.** A static import is content-hashed and
+served `Cache-Control: immutable`; `public/` is served `max-age=0`. Static
+imports also supply `width`, `height` and `blurDataURL` automatically, so no
+component has to hardcode dimensions. `public/` stays for files that must keep
+a fixed URL, which is why the metadata routes still live in `app/`.
 
 **The one hard rule: features never import from other features.** If two
 features need the same thing, it moves up to `components/ui/` or `lib/`.
@@ -104,6 +111,14 @@ Non-optional:
   build output). Every route in this project must stay `○` or `●`.
 - Zod v4: use `z.email()` / `z.url()`, not the deprecated
   `z.string().email()` / `.url()`.
+- **Type is on Figtree**, wired through `next/font/google` in `src/lib/fonts.ts`.
+  The design is set in a Gilroy-like face that we do not have a licence for;
+  Figtree is the closest available and, being variable with a true italic, one
+  payload covers every weight. `next/font` self-hosts at build time, so the
+  strict `font-src 'self'` CSP needs no exception. Swapping in the real face is
+  a change to that one file. Note Figtree sets roughly 10% wider than the
+  comp's face, which is why a few sizes in the marketing components are tuned
+  slightly below the measured values with a comment saying so.
 - `lucide-react` v1 **removed every brand icon** (Instagram, LinkedIn,
   YouTube and the rest). Social marks come from
   `src/components/ui/SocialIcon.tsx`, drawn inline in lucide's idiom. Do not

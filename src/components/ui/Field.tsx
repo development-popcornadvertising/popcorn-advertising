@@ -138,10 +138,19 @@ export function Field({
         </p>
       ) : null}
 
+      {/* `controlStyles` was computed but never applied on this branch, so
+          the stacked layout rendered bare browser controls. It went unseen
+          because the notify form is the inline layout; the contact form is
+          the first caller to stack. */}
       {multiline ? (
-        <textarea rows={5} {...shared} {...(rest as TextareaVariant)} />
+        <textarea
+          rows={5}
+          {...shared}
+          className={cn(controlStyles, "resize-y")}
+          {...(rest as TextareaVariant)}
+        />
       ) : (
-        <input {...shared} {...(rest as InputVariant)} />
+        <input {...shared} className={controlStyles} {...(rest as InputVariant)} />
       )}
 
       {/* No role="alert" per field: N invalid fields would fire N
