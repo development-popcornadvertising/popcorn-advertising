@@ -55,7 +55,7 @@ export function ContactInfo() {
 
       <p className="mt-5 max-w-[34rem] rise text-base leading-snug text-ink-soft rise-delay-2">
         Tell us what you&apos;re building, whether that is a launch film, an influencer push or a
-        full campaign, and we&apos;ll get back to you within a day.
+        full campaign, and you&apos;ll have a reply within one business day.
       </p>
 
       <dl className="mt-12 flex rise flex-col gap-5 rise-delay-3">

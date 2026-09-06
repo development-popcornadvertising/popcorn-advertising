@@ -12,7 +12,11 @@ import { toFieldErrors } from "@/lib/zodErrors";
 
 import { contactSchema, type ContactFormState } from "./schema";
 
-const SUCCESS_MESSAGE = "Thanks. Your message is in, and we'll come back to you within a day.";
+// One promise, worded the same here and in the confirmation email. A page
+// that says "within a day" and an email that says "one business day" reads
+// as two teams who did not talk to each other.
+const SUCCESS_MESSAGE =
+  "Thanks. Your enquiry is with the team, and you'll have a reply within one business day.";
 
 /**
  * Minimum plausible time to fill in four fields, in milliseconds.
@@ -29,7 +33,7 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 
 const failure = (values: Record<string, string>): ContactFormState => ({
   status: "error",
-  message: `Something went wrong on our end. Email us at ${siteConfig.contact.email} and we'll pick it up from there.`,
+  message: `We could not send your message just now. Please email us directly at ${siteConfig.contact.email} and we will pick it up from there.`,
   values,
 });
 
@@ -99,7 +103,7 @@ export async function submitContact(
   if (!limit.ok) {
     return {
       status: "error",
-      message: "That is a lot of messages in a short time. Try again in a few minutes.",
+      message: "Too many submissions from this connection. Please try again in a few minutes.",
       values,
     };
   }

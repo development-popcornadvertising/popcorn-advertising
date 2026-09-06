@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Tell us about the campaign. Popcorn Advertising handles strategy, production and placement in-house, and replies within a day.",
+    "Tell us about the campaign. Popcorn Advertising handles strategy, production and placement in-house, and replies within one business day.",
   alternates: { canonical: "/contact" },
 };
 

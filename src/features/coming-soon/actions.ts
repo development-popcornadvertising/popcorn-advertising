@@ -50,7 +50,7 @@ export async function subscribeToLaunch(
   if (!limit.ok) {
     return {
       status: "error",
-      message: "That is a lot of attempts in a short time. Try again in a few minutes.",
+      message: "Too many submissions from this connection. Please try again in a few minutes.",
       values: { email },
     };
   }
