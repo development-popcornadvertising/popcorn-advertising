@@ -8,7 +8,6 @@ import { SocialIcon } from "@/components/ui/SocialIcon";
 import { cn } from "@/lib/cn";
 import { siteConfig } from "@/lib/siteConfig";
 
-import { IntroAnimation } from "./IntroAnimation";
 import { LaunchStatus } from "./LaunchStatus";
 import { NotifyForm } from "./NotifyForm";
 
@@ -66,8 +65,6 @@ export function ComingSoon({ services }: ComingSoonProps) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <IntroAnimation />
-
       <section
         aria-labelledby="coming-soon-heading"
         className="relative flex flex-1 flex-col overflow-hidden"

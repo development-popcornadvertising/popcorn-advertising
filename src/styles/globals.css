@@ -2,53 +2,78 @@
 
 /* ------------------------------------------------------------------ */
 /*  Design tokens                                                      */
-/*  Every value here comes from Figma. Do not add a colour to a        */
-/*  component — add it here and use the generated utility.             */
+/*  Every value here is sampled from the design comp. Do not add a     */
+/*  colour to a component — add it here and use the generated utility. */
 /* ------------------------------------------------------------------ */
 
 @theme {
-  /* --- Brand palette [FIGMA: confirm every hex] ------------------- */
-  --color-cream: #faf0dc; /* page background */
-  --color-cream-deep: #f2e4c6; /* subtle panel on cream */
-  --color-paper: #fffdf7; /* card surface */
+  /* --- Brand palette ------------------------------------------------
+     THE SIX BELOW ARE THE BRAND'S OWN HEX VALUES, supplied by the client.
+     They are the authority, not the comp: a PNG export is a render, and
+     sampling one gave a cream that was a unit off and a panel dark
+     (#1e1e1e) that is not a brand colour at all. Do not re-sample these. */
+  --color-cream: #fff9ef; /* page background */
+  --color-paper: #ffffff; /* card surface */
+  --color-ink: #3c3636; /* headings, footer, dark panels */
+  --color-pop: #e5116c; /* primary action, ticker band */
+  --color-grape: #5855a5; /* secondary brand, card borders */
+  --color-butter: #fde392; /* CTA card, reverse wordmark */
 
-  --color-ink: #2e2233; /* primary text, footer background */
-  --color-ink-soft: #5a4f60; /* body copy on cream */
-
-  --color-pop: #c9184a; /* primary action, accents */
-  --color-pop-deep: #a41139; /* hover state */
-
-  --color-grape: #453079; /* dark brand panel */
-  --color-grape-soft: #6b53a8; /* secondary headline accent */
-  --color-grape-tint: #e5e0f5; /* icon chip background */
-
-  --color-butter: #efce79; /* CTA band */
+  /* --- Derived tones -------------------------------------------------
+     Not in the supplied palette. Each is a shade or tint of one of the six
+     above, kept as a token so a component never hardcodes an opacity it
+     cannot name. Re-derive from the palette if a value ever changes. */
+  --color-cream-deep: #fdf3e0; /* cream, one step down */
+  --color-ink-soft: #6d6764; /* ink lightened, for body copy on cream */
+  --color-pop-deep: #8d0a43; /* pop darkened, the button's extruded slab */
+  --color-grape-soft: #7b78bd; /* grape lightened, for dark grounds */
+  --color-grape-tint: #dedded; /* grape at low alpha, chips and borders */
 
   /* --- Typography ------------------------------------------------- */
-  /* next/font writes --font-*-face; these map onto it. Naming them
-     identically would collide with the utility Tailwind generates. */
-  --font-display: var(--font-display-face), ui-rounded, system-ui, sans-serif;
-  --font-body: var(--font-body-face), ui-sans-serif, system-ui, sans-serif;
+  /* next/font writes --font-brand; these map onto it. Naming them
+     identically would collide with the utility Tailwind generates.
+     One variable family covers both roles — see src/lib/fonts.ts. */
+  --font-display: var(--font-brand), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--font-brand), ui-sans-serif, system-ui, sans-serif;
 
-  /* Type scale — 1.25 (major third) from a 16px base */
-  --text-xs: 0.75rem; /* 12px — eyebrow, legal */
-  --text-sm: 0.875rem; /* 14px — footer links, labels */
+  /* Type scale. Display sizes are fluid so they scale continuously
+     instead of jumping at breakpoints; each clamp reaches its maximum
+     at roughly 1120px and holds it up to the comp's 1728px frame. The
+     max of every clamp is the value measured in the comp. */
+  --text-xs: 0.75rem; /* 12px — eyebrow, stat label, legal */
+  --text-sm: 0.875rem; /* 14px — footer links, small labels */
   --text-base: 1rem; /* 16px — body */
-  --text-lg: 1.125rem; /* 18px — lead paragraph */
-  --text-xl: 1.5rem; /* 24px — card title */
-  --text-2xl: 2rem; /* 32px — small section heading */
-  --text-3xl: 2.75rem; /* 44px — section heading */
-  --text-4xl: 3.5rem; /* 56px — hero, desktop */
-  --text-5xl: 4.25rem; /* 68px — holding page headline */
+  --text-lg: 1.0625rem; /* 17px — lead paragraph, nav */
+  --text-xl: 1.125rem; /* 18px — service card title */
+  --text-2xl: clamp(1.75rem, 1.15rem + 2.4vw, 2.375rem); /* 28 → 38  stat figure */
+  --text-3xl: clamp(2rem, 1.15rem + 3.8vw, 3.25rem); /* 32 → 52  why-us heading */
+  --text-4xl: clamp(2rem, 1.05rem + 4.2vw, 3.75rem); /* 32 → 60  hero, why-us, CTA */
+  --text-5xl: clamp(2.25rem, 1.1rem + 5vw, 4rem); /* 36 → 64  section heading */
 
   /* --- Layout ----------------------------------------------------- */
-  --spacing-section: 6rem; /* vertical rhythm between sections */
-  --spacing-section-lg: 8rem;
-  --radius-card: 1rem;
+  /* The comp's content spans exactly 1176px (x 277 → 1452 at its 1728px
+     frame). Container applies its gutter *inside* this max-width, so the
+     token is 1176 + 2 × 40 of md gutter: the inner content then measures
+     1176 on any viewport at or above 1256px. */
+  --container-page: 78.5rem; /* 1256px */
+  --spacing-section: 5rem; /* vertical rhythm between sections */
+  --spacing-section-lg: 6.5rem;
+  --radius-card: 1.5rem; /* service cards */
+  --radius-panel: 5rem; /* the why-us gradient card, measured off the comp */
+  --radius-media: 6.5rem; /* MediaFrame, measured off the comp */
   --radius-pill: 999px;
 
   /* --- Motion ----------------------------------------------------- */
-  --animate-marquee: marquee 38s linear infinite;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Durations are set from the distance each track actually travels, so the
+     two strips scroll at a matched speed: the ticker steps 4650px in 76s and
+     the logo wall 3849px in 96s, both ~55-60px/s. Changing the number of
+     copies in either component means changing its duration to match. */
+  --animate-marquee: marquee 76s linear infinite;
+  --animate-logo-wall: marquee 96s linear infinite;
+  --animate-logo-wall-reverse: marquee-reverse 96s linear infinite;
   --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
 
   @keyframes pulse-dot {
@@ -63,12 +88,24 @@
     }
   }
 
+  /* Both tracks translate by half their width, so a track has to hold an
+     even number of copies of its list and one half has to be wider than the
+     viewport — see the note in Marquee.tsx. */
   @keyframes marquee {
     from {
       transform: translateX(0);
     }
     to {
       transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
     }
   }
 }
@@ -78,13 +115,26 @@
 /* ------------------------------------------------------------------ */
 
 @layer base {
+  :root {
+    /* Consumed by scroll-padding below and by the mobile menu panel,
+       which opens beneath the sticky header. Responsive, so it cannot
+       live in @theme. */
+    --header-height: 4.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    :root {
+      --header-height: 7.125rem; /* 114px, measured off the comp */
+    }
+  }
+
   html {
     /* Next 16 removed automatic smooth scrolling for router navigation.
        The <html> element also carries data-scroll-behavior="smooth" so
        the router honours this rule — see src/app/layout.tsx. */
     scroll-behavior: smooth;
-    /* Clears the sticky header when jumping to an anchor */
-    scroll-padding-top: 6rem;
+    /* Clears the sticky header when jumping to an anchor. */
+    scroll-padding-top: calc(var(--header-height) + 1.5rem);
     -webkit-text-size-adjust: 100%;
   }
 
@@ -99,8 +149,12 @@
     color: var(--color-ink-soft);
     font-family: var(--font-body);
     font-size: var(--text-base);
-    line-height: 1.7;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
+    /* The tilted bands and the hero diagonal are deliberately wider than
+       the viewport. `clip` rather than `hidden`: `hidden` would make the
+       body a scroll container and silently break the sticky header. */
+    overflow-x: clip;
   }
 
   h1,
@@ -108,9 +162,17 @@
   h3,
   h4 {
     font-family: var(--font-display);
+    /* Tailwind's preflight sets `font-weight: inherit` on h1-h6, so without
+       this every heading renders at the body's 400 and the display type reads
+       light and airy instead of the comp's heavy setting.
+       700 is the floor, not 800: the four display headings opt up to
+       `font-extrabold` themselves, and applying 800 here as well made small
+       headings like the service card titles shout at the same volume as the
+       hero. Figtree is variable, so either weight costs no extra payload. */
+    font-weight: 700;
     color: var(--color-ink);
-    line-height: 1.1;
-    letter-spacing: -0.01em;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
 
@@ -152,6 +214,9 @@
 /*  the animation invisible on reload, which is when people actually   */
 /*  look at it, and mutating <html> pre-paint tripped a React          */
 /*  hydration mismatch.                                                */
+/*                                                                     */
+/*  Lives here rather than with a feature: the overlay is mounted by   */
+/*  the root layout and outlives the holding page.                     */
 /* ------------------------------------------------------------------ */
 
 /* Each puff is animated on a wrapping div, never on the SVG <circle>
@@ -178,13 +243,11 @@
 @keyframes intro-word {
   0% {
     opacity: 0;
-    transform: translateY(20px);
-    letter-spacing: 0.34em;
+    transform: translateY(20px) scale(0.94);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
-    letter-spacing: -0.01em;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -210,16 +273,104 @@
 }
 
 .intro-puff {
-  animation: intro-burst 0.68s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation: intro-burst 0.68s var(--ease-overshoot) backwards;
 }
 
 .intro-word {
-  animation: intro-word 0.66s cubic-bezier(0.16, 1, 0.3, 1) 0.42s backwards;
+  animation: intro-word 0.66s var(--ease-soft) 0.42s backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .intro {
     display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Entrance choreography                                              */
+/*                                                                     */
+/*  The hero staggers in as the intro curtain lifts (it clears at       */
+/*  1.32s and finishes at 1.94s).                                      */
+/*                                                                     */
+/*  The whole block is inside prefers-reduced-motion: no-preference,   */
+/*  which does two jobs. It honours the preference, and it means the   */
+/*  reduced-motion path — where .intro is display:none and there is no */
+/*  curtain to wait for — shows the hero instantly instead of sitting  */
+/*  blank for 1.32s. `opacity: 0` never exists as a base style, only   */
+/*  inside a keyframe with `backwards` fill, so content can never be   */
+/*  stranded invisible if an animation fails to run.                   */
+/* ------------------------------------------------------------------ */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* `@utility` has to sit at the top level in Tailwind v4, so the
+   reduced-motion guard goes inside the body rather than wrapping it. */
+@utility rise {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise-in 0.7s var(--ease-soft) backwards;
+  }
+}
+
+/* How long the stagger waits before its first step.
+
+   1.2s on a cold load, because it is waiting for the intro curtain. But the
+   root layout does not remount on a client-side navigation, so there is no
+   second curtain to wait for, and every page reached by clicking a nav link
+   was opening with 1.2s of blank hero. `IntroComplete` stamps
+   data-intro="done" on <html> when the curtain actually clears, and <html>
+   survives navigation, so every page after the first rises immediately. */
+:root {
+  --rise-offset: 1.2s;
+}
+
+:root[data-intro="done"] {
+  --rise-offset: 0s;
+}
+
+/* Steps of 90ms. Slow enough to read as a sequence, fast enough that the
+   last item lands before the eye has finished the first. */
+@utility rise-delay-* {
+  @media (prefers-reduced-motion: no-preference) {
+    animation-delay: calc(var(--rise-offset) + --value(integer) * 90ms);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll reveals                                                     */
+/*                                                                     */
+/*  Progressive enhancement, zero JavaScript. Where scroll-driven      */
+/*  animations are unsupported (Safari, Firefox at time of writing)    */
+/*  the @supports block never applies and content is simply visible —  */
+/*  no observer, no layout shift, nothing to go wrong.                 */
+/* ------------------------------------------------------------------ */
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility reveal {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 22%;
+    }
   }
 }
 
@@ -246,4 +397,36 @@
   @media (prefers-reduced-motion: reduce) {
     animation: none !important;
   }
+}
+
+/* The why-us section's lean, defined once and applied to both the gradient
+   card and the media panel inside it so their edges stay parallel. The comp
+   nests the two shapes; anything that leans them differently — a perspective
+   tilt on one of them, say — reads as a warp rather than as a stack.
+
+*/
+@utility frame-lean {
+  transform: rotate(-3deg) skewX(-10.5deg);
+}
+
+/* Fades a scrolling strip out at both edges so items enter and leave
+   rather than being chopped off at a hard boundary. */
+@utility edge-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 9rem,
+    #000 calc(100% - 9rem),
+    transparent
+  );
+}
+
+/* The brand gradient, pink into purple. The comp runs it at ~112deg on
+   the why-us card and flat left-to-right on the full-bleed bands. */
+@utility brand-gradient {
+  background-image: linear-gradient(112deg, var(--color-pop), var(--color-grape));
+}
+
+@utility brand-gradient-x {
+  background-image: linear-gradient(90deg, var(--color-pop), var(--color-grape));
 }

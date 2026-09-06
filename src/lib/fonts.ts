@@ -1,46 +1,29 @@
-import localFont from "next/font/local";
+import { Figtree } from "next/font/google";
 
 /**
- * ⚠️  BLOCKED: this module is written but not yet imported anywhere, because
- *     the four .woff2 files below do not exist yet. next/font/local resolves
- *     `src` paths at build time, so importing this file before the assets are
- *     in place fails the build.
+ * The brand typeface.
  *
- *     To finish wiring the brand typefaces:
- *       1. Drop the files into public/fonts/ with these exact names.
- *       2. Import { bodyFont, displayFont } in src/app/layout.tsx and add
- *          className={`${displayFont.variable} ${bodyFont.variable}`} to <html>.
- *       3. Delete this notice.
+ * The design is set in a Gilroy-like geometric sans: double-storey `a`,
+ * single-storey `g`, curved-foot `t`, tight tracking, and an oblique for
+ * the "POP." / "STAY." accents. Figtree is the closest face available
+ * under a licence we can ship, and it is a variable font with a true
+ * italic, so one payload covers every weight the design uses instead of
+ * four static files.
  *
- * Do not substitute a Google Fonts lookalike for the display face — the
- * rounded face carries most of the brand personality.
+ * next/font downloads and self-hosts the files at build time, so nothing
+ * is requested from Google at runtime and the `font-src 'self'` directive
+ * in next.config.ts is satisfied without an exception.
+ *
+ * TO SWAP IN THE REAL FACE: replace the call below with `localFont({...})`
+ * pointing at the .woff2 files in public/fonts/, keeping the same
+ * `--font-brand` variable name. Nothing outside this file changes;
+ * globals.css maps --font-display and --font-body onto that variable.
  */
-
-/** Rounded display face — headings and the logo wordmark only. */
-export const displayFont = localFont({
-  src: [
-    { path: "../../public/fonts/display-700.woff2", weight: "700", style: "normal" },
-    { path: "../../public/fonts/display-800.woff2", weight: "800", style: "normal" },
-  ],
-  variable: "--font-display-face",
+export const brandFont = Figtree({
+  // Required while `preload` defaults to true; omitting it warns at build.
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-brand",
   display: "swap",
-  preload: true,
   fallback: ["ui-rounded", "system-ui", "sans-serif"],
-  // next/font/local does not infer fallback metrics the way next/font/google
-  // does, so `display: "swap"` alone will still shift layout when the real
-  // face lands. Name the closest system face to size the fallback against.
-  adjustFontFallback: "Arial",
-});
-
-/** Body face — paragraphs, labels, navigation, form fields. */
-export const bodyFont = localFont({
-  src: [
-    { path: "../../public/fonts/body-400.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/body-500.woff2", weight: "500", style: "normal" },
-  ],
-  variable: "--font-body-face",
-  display: "swap",
-  preload: true,
-  fallback: ["ui-sans-serif", "system-ui", "sans-serif"],
-  adjustFontFallback: "Arial",
 });

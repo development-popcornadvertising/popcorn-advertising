@@ -44,3 +44,20 @@ export const POPCORN_PUFFS_COMPACT = [
   { cx: 26, cy: 16.5, r: 10 },
   { cx: 20, cy: 26, r: 10.5 },
 ] as const satisfies readonly Puff[];
+
+/**
+ * A single kernel, for the service ticker's separator.
+ *
+ * Distinct from the compact set above, which is built for square icon
+ * slots: two lobes over one reads as a heart at 16px, which is not the
+ * association wanted. This cluster is wider than it is tall and lumpy on
+ * both axes, which is what makes it read as a piece of popcorn at the size
+ * the comp draws it.
+ */
+export const POPCORN_KERNEL = [
+  { cx: 12, cy: 20, r: 9 },
+  { cx: 21, cy: 15.5, r: 9.5 },
+  { cx: 29, cy: 20.5, r: 8.5 },
+  { cx: 16, cy: 26, r: 8 },
+  { cx: 25, cy: 26, r: 8 },
+] as const satisfies readonly Puff[];

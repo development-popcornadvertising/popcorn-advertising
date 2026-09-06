@@ -1,6 +1,8 @@
 import { PopcornMark } from "@/components/ui/PopcornMark";
 import { siteConfig } from "@/lib/siteConfig";
 
+import { IntroComplete } from "./IntroComplete";
+
 type PuffTone = "cream" | "butter" | "paper";
 
 interface ScatteredPuff {
@@ -50,6 +52,9 @@ function burstDelay({ left, top }: ScatteredPuff): number {
  * The launch intro: a dark screen, popcorn bursting across it, then the
  * curtain wipes up to reveal the page.
  *
+ * Mounted by the root layout rather than by a page, so it survives the
+ * holding page being deleted at launch and plays on every route.
+ *
  * Ink rather than cream as the ground. A dark screen is what a cinema does
  * before the film starts, which is the association an agency called Popcorn
  * should be trading on, and cream puffs only read as popcorn against
@@ -64,6 +69,10 @@ function burstDelay({ left, top }: ScatteredPuff): number {
  * 2. `pointer-events-none` and `aria-hidden`. It never intercepts a click
  *    and never reaches a screen reader. The real page is already painted
  *    underneath and is immediately usable.
+ *    The z-index has to outrank the sticky header, which is also z-50 and
+ *    comes later in the DOM: at equal stacking the header painted over the
+ *    curtain, and being cream at 75% over the dark ground it showed up as a grey bar
+ *    floating across the intro.
  * 3. 1.94s total, under WCAG 2.2.2's five-second threshold, so no pause
  *    control is required. `prefers-reduced-motion` removes it entirely.
  * 4. No layout dependency. Everything is positioned in percentages against
@@ -73,8 +82,13 @@ export function IntroAnimation() {
   return (
     <div
       aria-hidden="true"
-      className="intro pointer-events-none fixed inset-0 z-50 overflow-hidden bg-ink"
+      className="intro pointer-events-none fixed inset-0 z-100 overflow-hidden bg-ink"
     >
+      {/* Renders nothing. It only records that the curtain has lifted, so
+          pages reached by a later client-side navigation do not wait for a
+          curtain that is not coming. */}
+      <IntroComplete />
+
       {SCATTER.map((puff) => (
         <div
           key={`${puff.left}-${puff.top}`}
@@ -96,7 +110,7 @@ export function IntroAnimation() {
       ))}
 
       <div className="absolute inset-0 grid place-items-center">
-        <p className="intro-word text-center font-display text-3xl leading-tight text-cream md:text-5xl">
+        <p className="intro-word text-center font-display text-3xl leading-tight font-extrabold text-cream md:text-5xl">
           Popcorn
           <span className="mt-1 block text-base font-normal text-butter md:text-lg">
             {siteConfig.tagline}
