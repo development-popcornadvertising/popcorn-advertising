@@ -10,8 +10,10 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:copy && pnpm build",
-    "check:copy": "node scripts/check-copy.mjs"
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:copy && pnpm test && pnpm build",
+    "check:copy": "node scripts/check-copy.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -35,7 +37,8 @@
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.0"
   },
   "packageManager": "pnpm@11.5.1"
 }

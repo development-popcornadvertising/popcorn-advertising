@@ -37,8 +37,14 @@ export default function ContactPage() {
 
           <ContactInfo />
 
-          {/* Pulled left of the wedge's edge so the card straddles it. */}
-          <div className="mt-14 rise rise-delay-4 xl:mt-0 xl:-ml-4">
+          {/* `relative` is load-bearing, not decoration. The wedge above is
+              absolutely positioned, so it paints over any sibling that is
+              NOT positioned. The form itself happened to carry `relative`
+              and survived; the success state did not, and the grape wedge
+              painted straight over it, leaving a clipped sliver reading
+              "Thanks. Your". Owning the layering here means neither state
+              can lose that race again. */}
+          <div className="relative mt-14 rise rise-delay-4 xl:mt-0 xl:-ml-4">
             <ContactForm />
           </div>
         </div>

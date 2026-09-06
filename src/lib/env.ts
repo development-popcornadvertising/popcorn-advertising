@@ -17,6 +17,16 @@ const envSchema = z.object({
   CONTACT_TO_EMAIL: z.email(),
   CONTACT_FROM_EMAIL: z.email(),
   NEXT_PUBLIC_SITE_URL: z.url(),
+
+  /**
+   * Signing secret for the Resend webhook, from the dashboard.
+   *
+   * Optional on purpose: the endpoint exists before the webhook is
+   * configured, and requiring it would fail every build until someone
+   * pastes it in. The route refuses to process anything while it is
+   * absent rather than accepting unverified payloads.
+   */
+  RESEND_WEBHOOK_SECRET: z.string().min(1).optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

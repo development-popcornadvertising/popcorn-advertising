@@ -108,7 +108,10 @@ Non-optional:
   `data-scroll-behavior="smooth"` so the `scroll-behavior` rule in
   `globals.css` applies to router navigation. Do not delete it.
 - Reading `searchParams` in a page opts it into dynamic rendering (`ƒ` in the
-  build output). Every route in this project must stay `○` or `●`.
+  build output). Every **page** in this project must stay `○` or `●`. The one
+  exception is `app/api/webhooks/resend/route.ts`: a webhook has to read the
+  request body, so it is `ƒ` by nature. That is the only `ƒ` the build should
+  ever show, and a second one on a page is a bug.
 - Zod v4: use `z.email()` / `z.url()`, not the deprecated
   `z.string().email()` / `.url()`.
 - **Type is on Figtree**, wired through `next/font/google` in `src/lib/fonts.ts`.
@@ -160,6 +163,6 @@ tokens need no entry.
 
 ## Verification
 
-`pnpm verify` = typecheck → lint → format:check → build. It must pass before
+`pnpm verify` = typecheck → lint → format:check → check:copy → test → build. It must pass before
 anything is considered done. `prettier` ignores `IMPLEMENTATION.md` — that
 document is authored by hand and should not be reformatted by tooling.

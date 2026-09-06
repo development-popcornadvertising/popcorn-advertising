@@ -36,7 +36,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       # The same command developers run locally: typecheck, lint,
-      # format:check, check:copy, build. Running `verify` rather than
+      # format:check, check:copy, test, build. Running `verify` rather than
       # listing its parts means the two can never drift apart.
       - name: Verify (live mode)
         run: pnpm verify

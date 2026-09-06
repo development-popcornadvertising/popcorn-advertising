@@ -24,7 +24,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: isComingSoon ? ["/dev", ...gated] : ["/dev"],
+      // /api is the webhook endpoint. Nothing under it is a page, and a
+      // crawler following it would just generate 400s.
+      disallow: isComingSoon ? ["/dev", "/api", ...gated] : ["/dev", "/api"],
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };

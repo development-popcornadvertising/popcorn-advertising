@@ -1,7 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
+import { Check } from "lucide-react";
+
+import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { HoneypotField } from "@/components/ui/HoneypotField";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -12,6 +15,14 @@ import { submitContact } from "../actions";
 import type { ContactFormState, ContactInput } from "../schema";
 
 const INITIAL_STATE: ContactFormState = { status: "idle" };
+
+/**
+ * One shell for both states. The success card has to be the same surface as
+ * the form, or finishing the form looks like the page broke: the card would
+ * change size, colour and shadow all at once.
+ */
+const CARD =
+  "relative rounded-card bg-paper p-7 shadow-[0_2px_4px_-2px_rgb(60_54_52_/_0.06),0_18px_40px_-18px_rgb(60_54_52_/_0.25)] sm:p-9";
 
 // A type-only import, so the schema module and zod with it are erased at
 // compile time and never reach the browser bundle.
@@ -42,8 +53,17 @@ type ContactField = keyof ContactInput;
  * handles by waving the check through rather than rejecting.
  */
 export function ContactForm() {
+  // `useActionState` has no reset, so "send another" remounts the form by
+  // changing its key. Cheaper and more predictable than mirroring every
+  // field into state just to be able to clear it.
+  const [attempt, setAttempt] = useState(0);
+
+  return <ContactFormFields key={attempt} onReset={() => setAttempt((n) => n + 1)} />;
+}
+
+function ContactFormFields({ onReset }: { onReset: () => void }) {
   const [state, formAction] = useActionState(submitContact, INITIAL_STATE);
-  const outcomeRef = useRef<HTMLParagraphElement>(null);
+  const outcomeRef = useRef<HTMLElement>(null);
   const startedAtRef = useRef<HTMLInputElement>(null);
 
   // Written to the DOM rather than held in state: the value is only ever
@@ -70,22 +90,31 @@ export function ContactForm() {
 
   if (state.status === "success") {
     return (
-      <p
-        ref={outcomeRef}
+      <div
+        ref={outcomeRef as React.RefObject<HTMLDivElement>}
         tabIndex={-1}
         role="status"
-        className="rounded-card bg-paper p-8 text-lg leading-snug text-ink shadow-[0_2px_4px_-2px_rgb(60_54_52_/_0.06),0_18px_40px_-18px_rgb(60_54_52_/_0.25)]"
+        className={CARD}
       >
-        {state.message}
-      </p>
+        <span className="grid size-12 place-items-center rounded-pill bg-pop text-white">
+          <Check className="size-6" strokeWidth={3} aria-hidden="true" />
+        </span>
+
+        <h2 className="mt-6 font-display text-2xl leading-tight font-extrabold text-ink">
+          Message sent.
+        </h2>
+
+        <p className="mt-3 text-base leading-snug text-ink-soft">{state.message}</p>
+
+        <Button variant="ghost" onClick={onReset} className="mt-6 -ml-3">
+          Send another message
+        </Button>
+      </div>
     );
   }
 
   return (
-    <form
-      action={formAction}
-      className="relative rounded-card bg-paper p-7 shadow-[0_2px_4px_-2px_rgb(60_54_52_/_0.06),0_18px_40px_-18px_rgb(60_54_52_/_0.25)] sm:p-9"
-    >
+    <form action={formAction} className={CARD}>
       <Field
         name="name"
         idPrefix="contact"
@@ -144,7 +173,12 @@ export function ContactForm() {
       {/* Rendered unconditionally so the live region exists in the DOM before
           a message ever arrives. A region added at the same moment as its
           content is unreliably announced. */}
-      <p ref={outcomeRef} tabIndex={-1} role="alert" className="mt-5 text-sm text-pop empty:mt-0">
+      <p
+        ref={outcomeRef as React.RefObject<HTMLParagraphElement>}
+        tabIndex={-1}
+        role="alert"
+        className="mt-5 text-sm text-pop empty:mt-0"
+      >
         {state.status === "error" ? state.message : null}
       </p>
 

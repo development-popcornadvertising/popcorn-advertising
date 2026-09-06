@@ -1,7 +1,10 @@
 "use server";
 
+import { getClientIp } from "@/lib/clientIp";
+import { renderLaunchNotification } from "@/lib/email/templates/launchNotification";
 import { env } from "@/lib/env";
 import { HONEYPOT_FIELD } from "@/lib/honeypot";
+import { rateLimit } from "@/lib/rateLimit";
 import { resend } from "@/lib/resend";
 import { siteConfig } from "@/lib/siteConfig";
 import { toFieldErrors } from "@/lib/zodErrors";
@@ -40,6 +43,18 @@ export async function subscribeToLaunch(
   // Returning an error instead would teach its operator to fix the bot.
   if (decoy.length > 0) return { status: "success", message: SUCCESS_MESSAGE };
 
+  // Before validation: a flood of malformed posts should cost us as little
+  // as a flood of valid ones. In-memory, so it holds within one warm
+  // instance only. See src/lib/rateLimit.ts for exactly what that is worth.
+  const limit = rateLimit(`notify:${await getClientIp()}`, 5, 10 * 60 * 1000);
+  if (!limit.ok) {
+    return {
+      status: "error",
+      message: "That is a lot of attempts in a short time. Try again in a few minutes.",
+      values: { email },
+    };
+  }
+
   const parsed = notifySchema.safeParse({ email });
 
   if (!parsed.success) {
@@ -51,19 +66,22 @@ export async function subscribeToLaunch(
     };
   }
 
+  const notification = renderLaunchNotification({
+    email: parsed.data.email,
+    receivedAt: new Date(),
+  });
+
   try {
     const { error } = await resend.emails.send(
       {
         from: `${siteConfig.name} <${env.CONTACT_FROM_EMAIL}>`,
         to: env.CONTACT_TO_EMAIL,
         replyTo: parsed.data.email,
-        subject: `Launch list signup: ${parsed.data.email}`,
-        text: [
-          "New launch-notify signup.",
-          "",
-          `Email: ${parsed.data.email}`,
-          `When:  ${new Date().toISOString()}`,
-        ].join("\n"),
+        subject: notification.subject,
+        html: notification.html,
+        // Alongside the HTML, not instead of it: an HTML-only message is a
+        // measurable spam signal, and some clients only render text.
+        text: notification.text,
       },
       // Suppresses a duplicate email if the same address is submitted twice
       // in quick succession, or if the request is retried.
@@ -71,13 +89,13 @@ export async function subscribeToLaunch(
     );
 
     if (error) {
-      console.error("Resend rejected the notify signup:", error);
+      console.error("Resend rejected the notify signup:", error, "Email was:", parsed.data.email);
       return failure(parsed.data.email);
     }
 
     return { status: "success", message: SUCCESS_MESSAGE };
   } catch (cause) {
-    console.error("subscribeToLaunch failed:", cause);
+    console.error("subscribeToLaunch failed:", cause, "Email was:", parsed.data.email);
     return failure(parsed.data.email);
   }
 }
