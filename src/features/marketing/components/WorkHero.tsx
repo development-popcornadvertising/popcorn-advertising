@@ -1,10 +1,9 @@
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { projectFilters, projects } from "@/features/marketing/data/projects";
+import { capabilities } from "@/features/marketing/data/capabilities";
 
-import { ProjectCard } from "./ProjectCard";
-import { WorkGallery } from "./WorkGallery";
+import { CapabilityCard } from "./CapabilityCard";
 
 /**
  * The Work page: its opening statement, and the grid underneath it.
@@ -15,21 +14,21 @@ import { WorkGallery } from "./WorkGallery";
  * boundary drifting away from the type as the window widens; an absolute
  * 9.5rem clip run so the angle holds rather than shearing with the block's
  * height; `inset-y-0` inside a wrapper holding only the copy, so its bottom
- * edge lands where the chip row begins without a hardcoded height; left
- * padding past the *whole* run, because a leaning edge otherwise needs an
- * inset that depends on the block's height, which depends on its own
- * measure; and the split at `xl`, because below 1280px the remaining
- * measure is under 300px and strands a few lines in a huge field.
+ * edge lands where the grid begins without a hardcoded height; left padding
+ * past the *whole* run, because a leaning edge otherwise needs an inset that
+ * depends on the block's height, which depends on its own measure; and the
+ * split at `xl`, because below 1280px the remaining measure is under 300px
+ * and strands a few lines in a huge field.
  *
- * The wedge says what the grid adds up to. It is true by construction from
- * the data rather than an invented aggregate, so it cannot go stale: six
- * projects, six distinct services.
+ * NO FILTER, AND THEREFORE NO CLIENT JAVASCRIPT. This page used to show six
+ * case studies behind a row of chips, which needed a client component to
+ * hold the active filter. It now lists all twelve services, and filtering
+ * twelve distinct things leaves one card per filter, so the chips earned
+ * nothing. Removing them took the page's entire client bundle with them.
  *
- * HERO AND GRID IN ONE SECTION, because the wedge's bottom edge has to
- * align with the chip row and that only falls out of the markup if they
- * share an ancestor. The grid's own heading is visually hidden: the page
- * `h1` already names the content, but `WorkGallery` still needs something
- * for the section to be labelled by.
+ * HERO AND GRID IN ONE SECTION, because the wedge's bottom edge has to align
+ * with the top of the grid, and that only falls out of the markup if the two
+ * share an ancestor.
  */
 export function WorkHero() {
   return (
@@ -47,10 +46,10 @@ export function WorkHero() {
             eyebrow="Our work"
             title={
               <>
-                Campaigns that <span className="text-pop italic">popped,</span> in numbers.
+                Everything we do, <span className="text-pop italic">under one roof.</span>
               </>
             }
-            lead="A sample of what happens when strategy, production and distribution live under one roof."
+            lead="Twelve services and one team, with no hand-offs between them. This is the full range."
             className="rise pt-16 pb-12 rise-delay-0 xl:py-25"
           />
 
@@ -58,12 +57,12 @@ export function WorkHero() {
             <Eyebrow tone="dark">Across the board</Eyebrow>
 
             <p className="mt-6 font-display text-2xl leading-tight font-bold text-cream">
-              Six campaigns. Six services.
+              Twelve services. One team.
             </p>
 
             <p className="mt-4 max-w-lg text-base leading-snug text-cream/80">
-              One team on every one of them, from the first strategy session to the number at the
-              end.
+              The same people carry a brief from the first strategy session to the number at the end
+              of it.
             </p>
           </div>
         </div>
@@ -71,20 +70,15 @@ export function WorkHero() {
         <div className="rise pb-section rise-delay-2 md:pb-section-lg xl:pt-4">
           {/* Visually hidden, but it has to exist: the cards are h3s, and
               without a rung between them and the page h1 the outline jumps
-              h1 -> h3. It also gives the grid a name for anyone navigating
-              by heading, which the chip row alone does not. */}
-          <h2 className="sr-only">Selected projects</h2>
+              h1 -> h3. It also names the grid for anyone navigating by
+              heading. */}
+          <h2 className="sr-only">Our services</h2>
 
-          <WorkGallery
-            filters={projectFilters}
-            items={projects.map((project) => ({
-              id: project.id,
-              category: project.category,
-              // Rendered here, on the server. WorkGallery only ever sees the
-              // finished node and the plain string beside it.
-              card: <ProjectCard project={project} className="reveal" />,
-            }))}
-          />
+          <ul className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+            {capabilities.map((capability) => (
+              <CapabilityCard key={capability.id} capability={capability} className="reveal" />
+            ))}
+          </ul>
         </div>
       </Container>
     </section>

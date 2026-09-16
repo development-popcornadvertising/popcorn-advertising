@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Ad films, influencer campaigns, events, branding, memes and podcasts. A sample of what Popcorn Advertising has shipped, with the numbers each one returned.",
+    "Influencer marketing, social, video, events, branding and more. The twelve services Popcorn Advertising runs in-house, with no hand-offs between them.",
   alternates: { canonical: "/work" },
 };
 
@@ -19,7 +19,7 @@ export default function WorkPage() {
       <WorkHero />
       <CtaBand
         headingId="work-cta-heading"
-        title="Want results like these for your brand?"
+        title="Want all of this handled for your brand?"
         ctaLabel="Let's talk"
       />
     </>
