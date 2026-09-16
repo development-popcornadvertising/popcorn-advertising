@@ -48,7 +48,6 @@ export const siteConfig = {
   social: [
     { label: "Instagram", href: "https://instagram.com/", icon: "instagram" },
     { label: "LinkedIn", href: "https://linkedin.com/", icon: "linkedin" },
-    { label: "YouTube", href: "https://youtube.com/", icon: "youtube" },
   ],
 
   nav: [
@@ -56,7 +55,6 @@ export const siteConfig = {
     { label: "Services", href: "/#services" },
     { label: "About", href: "/about" },
     { label: "Work", href: "/work" },
-    { label: "Contact", href: "/contact" },
   ],
 
   /**
@@ -76,10 +74,10 @@ export const siteConfig = {
       { label: "Careers", href: "mailto:hello@popcornadvertising.com" }, // [CLIENT] confirm a careers page
     ],
     services: [
-      { label: "Branding & UI/UX", href: "/#services" },
-      { label: "Digital Ad Films", href: "/#services" },
       { label: "Influencer Marketing", href: "/#services" },
-      { label: "Events Management", href: "/#services" },
+      { label: "Digital Ad Films", href: "/#services" },
+      { label: "Video Production", href: "/#services" },
+      { label: "Event Management & Coverage", href: "/#services" },
     ],
   },
 } as const;

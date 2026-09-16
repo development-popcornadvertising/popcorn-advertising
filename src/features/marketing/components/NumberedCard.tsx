@@ -1,31 +1,43 @@
 import { cn } from "@/lib/cn";
 
-import type { ProcessStep } from "../data/process";
+/**
+ * What a numbered card needs. Declared here rather than imported from one
+ * feature's data file, because two sections now use this card and neither
+ * should own the other's type.
+ */
+export interface NumberedItem {
+  id: string;
+  title: string;
+  description: string;
+}
 
-interface ProcessCardProps {
-  step: ProcessStep;
+interface NumberedCardProps {
+  item: NumberedItem;
   /** Position in the list, used for the badge. */
   index: number;
   className?: string;
 }
 
 /**
- * One stage of the process.
+ * A numbered card: an index badge, a title and a line of copy.
  *
- * The badge is `aria-hidden`. The parent is an ordered list, which already
- * tells a screen reader these run in sequence, so announcing "1" before
- * "Listen and scope" would say it twice.
+ * Used by the process steps and by "what we believe". Both are ordered
+ * lists, which is what makes the shared badge honest.
+ *
+ * The badge is `aria-hidden`. The parent <ol> already tells a screen reader
+ * these run in sequence, so announcing "1" before "Listen and scope" would
+ * say it twice.
  *
  * Surface and hover are `ServiceCard`'s, for the reasons recorded there:
  * only `transform` and `opacity` animate, and the deeper shadow lives on
  * its own cross-faded layer rather than being transitioned on `box-shadow`,
  * which repaints a large blur every frame.
  */
-export function ProcessCard({ step, index, className }: ProcessCardProps) {
+export function NumberedCard({ item, index, className }: NumberedCardProps) {
   return (
     <li
       className={cn(
-        "group/step relative isolate flex flex-col gap-4 rounded-card bg-paper p-7",
+        "group/card relative isolate flex flex-col gap-4 rounded-card bg-paper p-7",
         "shadow-[0_2px_4px_-2px_rgb(60_54_52_/_0.06),0_8px_20px_-10px_rgb(60_54_52_/_0.12)]",
         "transition-transform duration-300 ease-soft motion-safe:hover:-translate-y-1.5",
         className,
@@ -52,9 +64,9 @@ export function ProcessCard({ step, index, className }: ProcessCardProps) {
         {index + 1}
       </span>
 
-      <h3 className="text-xl leading-snug font-bold text-balance text-ink">{step.title}</h3>
+      <h3 className="text-xl leading-snug font-bold text-balance text-ink">{item.title}</h3>
 
-      <p className="text-base leading-snug text-ink-soft">{step.description}</p>
+      <p className="text-base leading-snug text-ink-soft">{item.description}</p>
     </li>
   );
 }

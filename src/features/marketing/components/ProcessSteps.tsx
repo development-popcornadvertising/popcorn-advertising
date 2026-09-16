@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 
 import { processSteps } from "../data/process";
 
-import { ProcessCard } from "./ProcessCard";
+import { NumberedCard } from "./NumberedCard";
 
 /**
  * The four stages of a brief.
@@ -25,7 +25,7 @@ export function ProcessSteps() {
 
         <ol className="mt-14 grid gap-x-13 gap-y-10 sm:grid-cols-2 xl:grid-cols-4">
           {processSteps.map((step, index) => (
-            <ProcessCard key={step.id} step={step} index={index} className="reveal" />
+            <NumberedCard key={step.id} item={step} index={index} className="reveal" />
           ))}
         </ol>
       </Container>

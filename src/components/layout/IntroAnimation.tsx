@@ -1,5 +1,7 @@
+import Image from "next/image";
+
+import logoWhite from "@/assets/brand/logo-white.png";
 import { PopcornMark } from "@/components/ui/PopcornMark";
-import { siteConfig } from "@/lib/siteConfig";
 
 import { IntroComplete } from "./IntroComplete";
 
@@ -110,12 +112,20 @@ export function IntroAnimation() {
       ))}
 
       <div className="absolute inset-0 grid place-items-center">
-        <p className="intro-word text-center font-display text-3xl leading-tight font-extrabold text-cream md:text-5xl">
-          Popcorn
-          <span className="mt-1 block text-base font-normal text-butter md:text-lg">
-            {siteConfig.tagline}
-          </span>
-        </p>
+        <div className="intro-word">
+          {/* The mark itself rather than the word set in Figtree. Figtree is
+              a stand-in for the real brand face, so a typeset "Popcorn" was
+              the one place the curtain showed a letterform the brand does
+              not actually use. Priority because this is the first paint of
+              the page, behind nothing. */}
+          <Image
+            src={logoWhite}
+            alt=""
+            priority
+            className="h-auto w-20 md:w-28"
+            sizes="(min-width: 768px) 112px, 80px"
+          />
+        </div>
       </div>
     </div>
   );

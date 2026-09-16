@@ -1,8 +1,9 @@
+import showreelPoster from "@/assets/brand/showreel-poster.jpg";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { MediaFrame } from "@/components/ui/MediaFrame";
 import { StatList } from "@/components/ui/StatList";
+import { VideoPanel } from "@/components/ui/VideoPanel";
 
 import { heroStats } from "../data/stats";
 
@@ -40,12 +41,18 @@ export function Hero() {
               edge resolves to exactly half the viewport at every width (the
               container is centred, so containerLeft + containerWidth/2 == W/2),
               which is why 50vw is exact rather than a guess. */}
-          <MediaFrame className="absolute inset-y-0 left-0 w-[50vw]" />
+          <VideoPanel
+            src="/showreel.mp4"
+            poster={showreelPoster}
+            label="the Popcorn Advertising showreel"
+            sizes="50vw"
+            className="absolute inset-y-0 left-0 w-[50vw]"
+          />
         </div>
 
         <div className="relative max-w-xl py-16 lg:py-25">
           <Eyebrow tone="butter" className="rise rise-delay-0">
-            Full-service creative &amp; marketing agency
+            Full-Stack Marketing Agency
           </Eyebrow>
 
           <h1
@@ -75,7 +82,10 @@ export function Hero() {
 
         {/* The small-screen stand-in for the diagonal panel. */}
         <div className="relative pb-16 lg:hidden">
-          <MediaFrame
+          <VideoPanel
+            src="/showreel.mp4"
+            poster={showreelPoster}
+            label="the Popcorn Advertising showreel"
             className="aspect-[4/3] w-full rounded-card sm:aspect-[16/9]"
             sizes="(min-width: 640px) 90vw, 100vw"
           />

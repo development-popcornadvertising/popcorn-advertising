@@ -15,7 +15,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
  * eyebrow. The override buys that back.
  *
  * The three columns are not decoration. The heading names strategy,
- * production and placement, and without them the band was a heading on the
+ * execution and management, and without them the band was a heading on the
  * left and 600px of empty purple on the right; saying what each of the
  * three actually means is the content that space was missing.
  *
@@ -33,11 +33,11 @@ const pillars = [
     definition: "Positioning, audience and the number the work has to move.",
   },
   {
-    term: "Production",
+    term: "Execution",
     definition: "Film, stills, design and edit, shot and finished by our own crew.",
   },
   {
-    term: "Placement",
+    term: "Management",
     definition: "Media, influencers and events, booked and run by the same team.",
   },
 ];
@@ -59,7 +59,7 @@ export function ApproachBand() {
         id="approach-heading"
         tone="dark"
         eyebrow="Our approach"
-        title="Strategy, production and placement, never handed off between agencies."
+        title="Strategy, execution and management, never handed off between agencies."
         lead="Every brief moves through the same team from first sketch to final metric, so ideas keep their shape from deck to delivery."
         leadClassName="max-w-[38rem]"
       />

@@ -1,6 +1,7 @@
+import showreelPoster from "@/assets/brand/showreel-poster.jpg";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { MediaFrame } from "@/components/ui/MediaFrame";
+import { VideoPanel } from "@/components/ui/VideoPanel";
 
 import { ClientLogos } from "./ClientLogos";
 
@@ -70,7 +71,10 @@ export function WhyUs() {
           />
 
           <div className="relative grid items-center gap-10 p-8 sm:p-12 lg:grid-cols-2 lg:gap-x-10 lg:p-10 lg:pr-14 xl:grid-cols-[1.055fr_1fr] xl:gap-x-0 xl:pt-8 xl:pr-24 xl:pb-24 xl:pl-22">
-            <MediaFrame
+            <VideoPanel
+              src="/showreel.mp4"
+              poster={showreelPoster}
+              label="the Popcorn Advertising showreel"
               className="aspect-4/3 w-full rounded-card lg:ml-6 lg:aspect-auto lg:h-full lg:min-h-88 lg:rounded-media lg:max-xl:-rotate-2 xl:min-h-118 xl:[transform:perspective(500px)_rotateX(19deg)_rotateZ(-3deg)]"
               sizes="(min-width: 1024px) 45vw, 90vw"
             />

@@ -1,6 +1,8 @@
 import { AboutHero } from "@/features/marketing/components/AboutHero";
 import { ApproachBand } from "@/features/marketing/components/ApproachBand";
+import { Beliefs } from "@/features/marketing/components/Beliefs";
 import { CtaBand } from "@/features/marketing/components/CtaBand";
+import { FounderMessage } from "@/features/marketing/components/FounderMessage";
 import { ProcessSteps } from "@/features/marketing/components/ProcessSteps";
 
 import type { Metadata } from "next";
@@ -19,6 +21,8 @@ export default function AboutPage() {
   return (
     <>
       <AboutHero />
+      <FounderMessage />
+      <Beliefs />
       <ApproachBand />
       <ProcessSteps />
       <CtaBand headingId="about-cta-heading" title="Like how we work? Let's start yours." />

@@ -8,6 +8,11 @@ import { ServiceCard } from "./ServiceCard";
 /**
  * The twelve disciplines.
  *
+ * The heading counts, so the list has to stay at twelve. Two slots changed
+ * meaning rather than being added to: Podcast Production became Social Media
+ * Management, and Events Coverage became AI Video Production once Event
+ * Management absorbed coverage.
+ *
  * Column counts climb 1 → 2 → 3 → 4. Four only arrives at `xl` because the
  * comp's cards are 255px wide with a 53px gutter, so a four-up row needs
  * 1179px of content and would crush below that.

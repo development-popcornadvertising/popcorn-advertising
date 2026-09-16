@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 import { Container } from "./Container";
 
-type SectionTone = "cream" | "grape" | "ink";
+type SectionTone = "cream" | "grape" | "pop" | "ink";
 
 interface SectionProps {
   children: ReactNode;
@@ -23,6 +23,7 @@ interface SectionProps {
 const toneStyles: Record<SectionTone, string> = {
   cream: "bg-cream text-ink-soft",
   grape: "bg-grape text-cream/85",
+  pop: "bg-pop text-cream/85",
   ink: "bg-ink text-cream/70",
 };
 
